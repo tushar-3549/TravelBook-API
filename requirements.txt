@@ -9,3 +9,8 @@ whitenoise>=6.6.0
 psycopg[binary]
 gunicorn
 whitenoise
+pytest
+pytest-django
+pytest-cov
+factory_boy
+Faker

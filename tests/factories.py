@@ -19,8 +19,10 @@ class UserFactory(factory.django.DjangoModelFactory):
 class CountryFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Country
-    code = "KR"
-    name = "South Korea"
+    # code = "KR"
+    # name = "South Korea"
+    code = factory.Sequence(lambda n: f"KR{n}")  # unique codes
+    name = factory.Sequence(lambda n: f"South Korea {n}")
 
 class CityFactory(factory.django.DjangoModelFactory):
     class Meta:
@@ -82,18 +84,60 @@ class PropertyPhotoFactory(factory.django.DjangoModelFactory):
     property = factory.SubFactory(PropertyFactory)
     image_url = factory.LazyFunction(lambda: f"https://picsum.photos/seed/{fake.uuid4()}/800/600")
 
+# class BookingFactory(factory.django.DjangoModelFactory):
+#     class Meta:
+#         model = Booking
+#     code = factory.Sequence(lambda n: f"BK{1000+n}")
+#     property = factory.SubFactory(PropertyFactory)
+#     guest_name = "Alice"
+#     guest_email = "alice@example.com"
+#     check_in = "2025-12-10"
+#     check_out = "2025-12-12"
+#     guests = 2
+#     total_amount = Decimal("200000")
+#     status = "pending"
+
+
 class BookingFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Booking
+
     code = factory.Sequence(lambda n: f"BK{1000+n}")
     property = factory.SubFactory(PropertyFactory)
-    guest_name = "Alice"
-    guest_email = "alice@example.com"
     check_in = "2025-12-10"
     check_out = "2025-12-12"
-    guests = 2
-    total_amount = Decimal("200000")
     status = "pending"
+
+    @factory.post_generation
+    def guest_name(self, create, extracted, **kwargs):
+        # যদি model-এ guest_name না থাকে, কিছুই করো না
+        if hasattr(self, "guest_name") and extracted:
+            self.guest_name = extracted
+        elif hasattr(self, "guest_name") and not extracted:
+            self.guest_name = "Alice"
+
+    @factory.post_generation
+    def guest_email(self, create, extracted, **kwargs):
+        if hasattr(self, "guest_email") and extracted:
+            self.guest_email = extracted
+        elif hasattr(self, "guest_email"):
+            self.guest_email = "alice@example.com"
+
+    @factory.post_generation
+    def total_amount(self, create, extracted, **kwargs):
+        if hasattr(self, "total_amount") and extracted:
+            self.total_amount = extracted
+        elif hasattr(self, "total_amount"):
+            self.total_amount = Decimal("200000")
+
+    @factory.post_generation
+    def guests(self, create, extracted, **kwargs):
+        if hasattr(self, "guests") and extracted:
+            self.guests = extracted
+        elif hasattr(self, "guests"):
+            self.guests = 2
+
+
 
 class PaymentFactory(factory.django.DjangoModelFactory):
     class Meta:
@@ -104,3 +148,4 @@ class PaymentFactory(factory.django.DjangoModelFactory):
     amount = Decimal("200000")
     client_secret = factory.Faker("uuid4")
     status = "requires_confirmation"
+

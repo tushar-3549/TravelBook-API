@@ -13,3 +13,4 @@ class BookingSerializer(serializers.ModelSerializer):
 class QuoteSerializer(serializers.Serializer):
     property_id=serializers.IntegerField(); room_type_id=serializers.IntegerField(); rate_plan_id=serializers.IntegerField()
     check_in=serializers.DateField(); check_out=serializers.DateField(); adults=serializers.IntegerField(default=2); children=serializers.IntegerField(default=0)
+

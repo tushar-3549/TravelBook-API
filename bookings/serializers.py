@@ -8,7 +8,7 @@ class BookingSerializer(serializers.ModelSerializer):
         model=Booking
         fields=['id','code','property','room_type','rate_plan','check_in','check_out','adults','children','currency','subtotal','taxes','total','status','guests']
         # read_only_fields=['status']
-        read_only_fields = ['code', 'subtotal', 'taxes', 'total', 'status']
+        read_only_fields = ['code', 'subtotal', 'taxes', 'total']
 
 class QuoteSerializer(serializers.Serializer):
     property_id=serializers.IntegerField(); room_type_id=serializers.IntegerField(); rate_plan_id=serializers.IntegerField()

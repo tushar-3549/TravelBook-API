@@ -4,7 +4,7 @@ from faker import Faker
 from accounts.models import User
 from locations.models import Country, City
 from properties.models import Amenity, Property, RoomType, RatePlan, PropertyPhoto
-from bookings.models import Booking
+from bookings.models import Booking, gen_code
 from payments.models import Payment
 
 fake = Faker()
@@ -102,41 +102,16 @@ class BookingFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Booking
 
-    code = factory.Sequence(lambda n: f"BK{1000+n}")
+    code = factory.LazyFunction(gen_code)
     property = factory.SubFactory(PropertyFactory)
+    room_type = factory.SubFactory(RoomTypeFactory, property=factory.SelfAttribute('..property'))
+    rate_plan = factory.SubFactory(RatePlanFactory, room_type=factory.SelfAttribute('..room_type'))
     check_in = "2025-12-10"
     check_out = "2025-12-12"
+    subtotal = Decimal("200000")
+    taxes = Decimal("20000")
+    total = Decimal("220000")
     status = "pending"
-
-    @factory.post_generation
-    def guest_name(self, create, extracted, **kwargs):
-        # যদি model-এ guest_name না থাকে, কিছুই করো না
-        if hasattr(self, "guest_name") and extracted:
-            self.guest_name = extracted
-        elif hasattr(self, "guest_name") and not extracted:
-            self.guest_name = "Alice"
-
-    @factory.post_generation
-    def guest_email(self, create, extracted, **kwargs):
-        if hasattr(self, "guest_email") and extracted:
-            self.guest_email = extracted
-        elif hasattr(self, "guest_email"):
-            self.guest_email = "alice@example.com"
-
-    @factory.post_generation
-    def total_amount(self, create, extracted, **kwargs):
-        if hasattr(self, "total_amount") and extracted:
-            self.total_amount = extracted
-        elif hasattr(self, "total_amount"):
-            self.total_amount = Decimal("200000")
-
-    @factory.post_generation
-    def guests(self, create, extracted, **kwargs):
-        if hasattr(self, "guests") and extracted:
-            self.guests = extracted
-        elif hasattr(self, "guests"):
-            self.guests = 2
-
 
 
 class PaymentFactory(factory.django.DjangoModelFactory):

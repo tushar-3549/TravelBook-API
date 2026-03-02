@@ -3,6 +3,8 @@ import os
 import sys
 
 def main():
+    from dotenv import load_dotenv
+    load_dotenv()
     # .env থেকে DEBUG ভ্যালু পড়বে
     debug_mode = os.getenv("DEBUG", "False").lower() == "true"
     

@@ -21,3 +21,10 @@ class MeView(APIView):
     def patch(self, request, version):
         s=UserSerializer(request.user, data=request.data, partial=True)
         s.is_valid(raise_exception=True); s.save(); return Response(s.data)
+    def put(self, request, version):
+        s=UserSerializer(request.user, data=request.data)
+        s.is_valid(raise_exception=True); s.save(); return Response(s.data)
+    def delete(self, request, version):
+        request.user.is_active = False
+        request.user.save()
+        return Response(status=status.HTTP_204_NO_CONTENT)

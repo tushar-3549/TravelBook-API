@@ -120,6 +120,17 @@ class BookingDetailView(APIView):
         try: b=Booking.objects.get(code=code)
         except Booking.DoesNotExist: return Response({'detail':'Not found'}, status=404)
         return Response(BookingSerializer(b).data)
+    def put(self, request, version, code):
+        b=Booking.objects.get(code=code)
+        s=BookingSerializer(b, data=request.data)
+        s.is_valid(raise_exception=True); s.save(); return Response(s.data)
+    def patch(self, request, version, code):
+        b=Booking.objects.get(code=code)
+        s=BookingSerializer(b, data=request.data, partial=True)
+        s.is_valid(raise_exception=True); s.save(); return Response(s.data)
+    def delete(self, request, version, code):
+        Booking.objects.filter(code=code).delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 class MyBookingsView(APIView):
     permission_classes=[permissions.IsAuthenticated]
     def get(self, request, version):
